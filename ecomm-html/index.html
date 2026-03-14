@@ -433,80 +433,69 @@
     }
 
     .lesson-summary-preview {
-      font-size: 15px;
-      line-height: 1.8;
+      font-size: 14px;
+      line-height: 1.6;
       color: var(--text-secondary);
-      white-space: pre-line;
     }
     .lesson-summary-full {
-      font-size: 15px;
-      line-height: 1.8;
+      font-size: 14px;
+      line-height: 1.6;
       color: var(--text-secondary);
     }
     .lesson-summary-full .fmt-heading {
-      font-family: var(--font-th-cute);
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 700;
       color: var(--text);
-      margin: 20px 0 8px 0;
-      padding-bottom: 4px;
-      border-bottom: 2px solid color-mix(in srgb, var(--step-color, #6366f1) 20%, transparent);
+      margin: 14px 0 4px 0;
+      padding: 4px 10px;
+      background: color-mix(in srgb, var(--step-color, #6366f1) 8%, transparent);
+      border-left: 3px solid var(--step-color, #6366f1);
+      border-radius: 0 6px 6px 0;
     }
     .lesson-summary-full .fmt-heading:first-child { margin-top: 0; }
     .lesson-summary-full .fmt-para {
-      margin: 8px 0;
+      margin: 3px 0;
+      text-indent: 1.5em;
     }
     .lesson-summary-full .fmt-ol {
-      margin: 8px 0 8px 0;
+      margin: 4px 0;
       padding-left: 0;
       counter-reset: step-counter;
       list-style: none;
     }
     .lesson-summary-full .fmt-ol li {
       counter-increment: step-counter;
-      padding: 8px 12px 8px 40px;
+      padding: 3px 8px 3px 32px;
       position: relative;
-      margin-bottom: 4px;
-      background: color-mix(in srgb, var(--step-color, #6366f1) 4%, var(--bg));
-      border-radius: 8px;
-      border-left: 3px solid color-mix(in srgb, var(--step-color, #6366f1) 40%, transparent);
+      margin-bottom: 1px;
     }
     .lesson-summary-full .fmt-ol li::before {
-      content: counter(step-counter);
+      content: counter(step-counter) ".";
       position: absolute;
-      left: 10px;
-      top: 8px;
-      width: 22px;
-      height: 22px;
-      border-radius: 50%;
-      background: var(--step-color, #6366f1);
-      color: white;
+      left: 8px;
+      top: 3px;
       font-family: var(--font-en);
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 700;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      color: var(--step-color, #6366f1);
     }
     .lesson-summary-full .fmt-ul {
-      margin: 8px 0;
+      margin: 4px 0;
       padding-left: 0;
       list-style: none;
     }
     .lesson-summary-full .fmt-ul li {
-      padding: 6px 12px 6px 24px;
+      padding: 2px 8px 2px 22px;
       position: relative;
-      margin-bottom: 2px;
+      margin-bottom: 1px;
     }
     .lesson-summary-full .fmt-ul li::before {
-      content: '';
+      content: '●';
       position: absolute;
       left: 8px;
-      top: 14px;
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: var(--step-color, #6366f1);
+      top: 3px;
+      font-size: 7px;
+      color: var(--step-color, #6366f1);
     }
 
     .read-more-btn {
