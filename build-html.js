@@ -37,7 +37,49 @@ function makePreview(summary, maxLen = 150) {
 }
 
 function formatSummary(summary) {
-  return esc(summary).replace(/\n/g, '\n\n');
+  const lines = summary.split('\n');
+  let html = '';
+  let inOl = false;
+  let inUl = false;
+
+  function closeList() {
+    if (inOl) { html += '</ol>'; inOl = false; }
+    if (inUl) { html += '</ul>'; inUl = false; }
+  }
+
+  for (const raw of lines) {
+    const line = raw.trim();
+    if (!line) { closeList(); continue; }
+
+    // Numbered list: "1. xxx" or "1) xxx"
+    const olMatch = line.match(/^(\d+)[.)]\s+(.+)/);
+    if (olMatch) {
+      if (inUl) { html += '</ul>'; inUl = false; }
+      if (!inOl) { html += '<ol class="fmt-ol">'; inOl = true; }
+      html += `<li>${esc(olMatch[2])}</li>`;
+      continue;
+    }
+
+    // Bullet list: "- xxx" or "— xxx" or "• xxx"
+    const ulMatch = line.match(/^[-—•]\s+(.+)/);
+    if (ulMatch) {
+      if (inOl) { html += '</ol>'; inOl = false; }
+      if (!inUl) { html += '<ul class="fmt-ul">'; inUl = true; }
+      html += `<li>${esc(ulMatch[1])}</li>`;
+      continue;
+    }
+
+    closeList();
+
+    // Header-like: ends with : or ? and is short-ish, or is a standalone question
+    if ((line.endsWith(':') || line.endsWith('?')) && line.length < 120) {
+      html += `<h4 class="fmt-heading">${esc(line)}</h4>`;
+    } else {
+      html += `<p class="fmt-para">${esc(line)}</p>`;
+    }
+  }
+  closeList();
+  return html;
 }
 
 // Group lessons by step
@@ -105,7 +147,7 @@ ${lesson.keyPoints.map(kp => `              <li>${esc(kp)}</li>`).join('\n')}
           <img src="images/lesson_${padNum}.png" alt="Lesson ${num}"
                class="lesson-image" loading="lazy"
                onerror="this.style.display='none'" />
-          <div class="lesson-body">
+          <div class="lesson-body" style="--step-color: ${color}">
             <div class="lesson-summary-preview">${esc(makePreview(lesson.summary))}</div>
             <div class="lesson-summary-full" style="display:none">${formatSummary(lesson.summary)}</div>
             <button class="read-more-btn" onclick="toggleSummary(this)" style="--step-color: ${color}">
@@ -578,11 +620,81 @@ const html = `<!DOCTYPE html>
       padding: 20px;
     }
 
-    .lesson-summary-preview, .lesson-summary-full {
+    .lesson-summary-preview {
       font-size: 15px;
       line-height: 1.8;
       color: var(--text-secondary);
       white-space: pre-line;
+    }
+    .lesson-summary-full {
+      font-size: 15px;
+      line-height: 1.8;
+      color: var(--text-secondary);
+    }
+    .lesson-summary-full .fmt-heading {
+      font-family: var(--font-th-cute);
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+      margin: 20px 0 8px 0;
+      padding-bottom: 4px;
+      border-bottom: 2px solid color-mix(in srgb, var(--step-color, #6366f1) 20%, transparent);
+    }
+    .lesson-summary-full .fmt-heading:first-child { margin-top: 0; }
+    .lesson-summary-full .fmt-para {
+      margin: 8px 0;
+    }
+    .lesson-summary-full .fmt-ol {
+      margin: 8px 0 8px 0;
+      padding-left: 0;
+      counter-reset: step-counter;
+      list-style: none;
+    }
+    .lesson-summary-full .fmt-ol li {
+      counter-increment: step-counter;
+      padding: 8px 12px 8px 40px;
+      position: relative;
+      margin-bottom: 4px;
+      background: color-mix(in srgb, var(--step-color, #6366f1) 4%, var(--bg));
+      border-radius: 8px;
+      border-left: 3px solid color-mix(in srgb, var(--step-color, #6366f1) 40%, transparent);
+    }
+    .lesson-summary-full .fmt-ol li::before {
+      content: counter(step-counter);
+      position: absolute;
+      left: 10px;
+      top: 8px;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--step-color, #6366f1);
+      color: white;
+      font-family: var(--font-en);
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .lesson-summary-full .fmt-ul {
+      margin: 8px 0;
+      padding-left: 0;
+      list-style: none;
+    }
+    .lesson-summary-full .fmt-ul li {
+      padding: 6px 12px 6px 24px;
+      position: relative;
+      margin-bottom: 2px;
+    }
+    .lesson-summary-full .fmt-ul li::before {
+      content: '';
+      position: absolute;
+      left: 8px;
+      top: 14px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--step-color, #6366f1);
     }
 
     .read-more-btn {
